@@ -1,0 +1,23 @@
+{
+  "name": "followup-software-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Follow Up Software — backend API, automatic sender and IMAP reply reader",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node --test test/*.test.js",
+    "seed": "node scripts/seed-admin.js",
+    "gmail-auth": "node scripts/gmail-auth.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "imapflow": "^1.0.164",
+    "mailparser": "^3.7.1",
+    "mongodb": "^6.10.0",
+    "nodemailer": "^6.9.16"
+  }
+}

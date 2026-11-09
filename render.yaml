@@ -1,0 +1,55 @@
+# Render Blueprint — backend API (free plan). Frontend goes on Vercel.
+# Secrets are marked sync: false — Render asks for them when you create the service.
+services:
+  - type: web
+    name: sitecraft-followup-api
+    runtime: node
+    plan: free
+    region: singapore
+    rootDir: backend
+    buildCommand: npm install --omit=dev
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: TRUST_PROXY
+        value: "true"
+      - key: TIMEZONE
+        value: Asia/Kolkata
+      - key: MAIL_TRANSPORT
+        value: gmail-api
+      - key: MAIL_DRY_RUN
+        value: "false"
+      - key: IMAP_HOST
+        value: imap.gmail.com
+      - key: IMAP_PORT
+        value: "993"
+      - key: IMAP_SECURE
+        value: "true"
+      - key: MONGODB_DB
+        value: myfollowup
+      - key: FRONTEND_URL
+        sync: false
+      - key: PUBLIC_BACKEND_URL
+        sync: false
+      - key: ADMIN_USERNAME
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: AUTH_SECRET
+        sync: false
+      - key: MONGODB_URI
+        sync: false
+      - key: FROM_EMAIL
+        sync: false
+      - key: IMAP_USER
+        sync: false
+      - key: IMAP_PASS
+        sync: false
+      - key: GMAIL_CLIENT_ID
+        sync: false
+      - key: GMAIL_CLIENT_SECRET
+        sync: false
+      - key: GMAIL_REFRESH_TOKEN
+        sync: false
