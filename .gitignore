@@ -7,3 +7,4 @@ npm-debug.log*
 .env.backup-*
 *.env.backup*
 .vercel
+.env.render
