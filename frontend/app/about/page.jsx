@@ -11,7 +11,7 @@ export default function About() {
       </p>
       <h2 style={h2}>What it does</h2>
       <ul>
-        <li>Sends at most 10 emails a day, one per hour, from SiteCraft's own Gmail account.</li>
+        <li>Sends at most 30 emails a day, spaced through business hours, from SiteCraft's own Gmail account.</li>
         <li>Stops all follow-ups as soon as a person replies, so the conversation continues normally in Gmail.</li>
         <li>Every email has an unsubscribe option. Anyone who unsubscribes is never emailed again.</li>
       </ul>

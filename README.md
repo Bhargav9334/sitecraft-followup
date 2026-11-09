@@ -16,7 +16,7 @@ myfollowup/
 | Sending | Gmail SMTP (`smtp.gmail.com`) — From: **Bhargav from SiteCraft**. |
 | Signature | Every mail ends with **Best regards, / SiteCraft by Bhargav / your number** — From name, name and number are editable on the **Settings** page. |
 | 6-mail sequence | Mail 1 → **+3 days** → **+7** → **+7** → **+10** → **+15**. Text and gaps editable on the **Sequence** page. Follow-ups go in the same thread (`Re:`). |
-| Daily limit | **10 mails/day**, **1 per hour**, **9 AM – 7 PM IST**. `MAX_DAILY_LIMIT=10` is a hard cap — the UI can't go above it. Follow-ups get priority, then new leads. |
+| Daily limit | **30 mails/day**, **1 every 18 minutes**, **9 AM – 7 PM IST**. `MAX_DAILY_LIMIT=30` is a hard cap — the UI can't go above it. Follow-ups get priority, then new leads. |
 | Off days | Sundays + government holidays (Central Govt. 2026 list pre-loaded, editable in **Settings**). |
 | Replies | IMAP checks the inbox every 5 min. A real reply → lead becomes **Replied**, remaining mails cancelled, reply shown in the app with an "Open in Gmail" button. Out-of-office auto-replies are ignored (sequence continues). Bounces are detected and stopped. |
 | Unsubscribe | Every mail has an unsubscribe link (+ Gmail one-click header). Unsubscribed people are listed on the **Unsubscribed** page and never get mail again — not even if re-uploaded. |
@@ -69,7 +69,7 @@ Want to try without sending real mails? Set `MAIL_DRY_RUN=true` in `backend/.env
 - Use a long random `AUTH_SECRET` and a strong `ADMIN_PASSWORD`.
 
 ## Deliverability tips
-- Add a profile photo to the Gmail account and keep 10/day for the first 2–3 weeks; only then raise `MAX_DAILY_LIMIT` slowly (free Gmail allows max ~500/day).
+- Add a profile photo to the Gmail account and keep an eye on spam/bounce rates at 30/day; raise `MAX_DAILY_LIMIT` slowly (free Gmail allows max ~500/day).
 - Only email publicly listed business contacts, and keep the unsubscribe link (it's added automatically).
 
 ## Logo — `brand/`

@@ -95,7 +95,7 @@ test('end-to-end: login → import → schedule → follow-up → reply stop →
   assert.equal(m2.inReplyTo, s.mailer.sent[0].messageId);
   assert.deepEqual(m2.references, [s.mailer.sent[0].messageId]);
   lead = await s.repo.getLead(sharma.id);
-  assert.equal(lead.nextSendAt.toISOString(), ist(2026, 11, 19, 9, 0).toISOString(), 'Mail 3 after 7 days');
+  assert.equal(lead.nextSendAt.toISOString(), ist(2026, 11, 17, 9, 0).toISOString(), 'Mail 3 after 5 days');
 
   // ---------- Sharma replies → sequence stops ----------
   let h = await handleIncoming({
@@ -176,7 +176,7 @@ test('end-to-end: login → import → schedule → follow-up → reply stop →
   // ---------- sequence edit ----------
   r = await s.api('GET', '/api/sequence');
   assert.equal(r.data.steps.length, 6);
-  assert.deepEqual(r.data.steps.map((x) => x.delayDays), [0, 3, 7, 7, 10, 15]);
+  assert.deepEqual(r.data.steps.map((x) => x.delayDays), [0, 3, 5, 7, 10, 14]);
   const steps = r.data.steps.map((x) => ({ ...x }));
   steps[0].subject = '';
   r = await s.api('PUT', '/api/sequence', { steps });
@@ -368,7 +368,7 @@ test('default emails: proper English, no "free" offers, restore button resets an
   assert.doesNotMatch(all, /\bfree\b|mockup|guarantee|cheap/i, 'no spammy offers');
   assert.match(r.data.steps[0].body, /Fast delivery/);
   assert.match(r.data.steps[0].body, /Fair pricing/);
-  assert.deepEqual(r.data.steps.map((x) => x.delayDays), [0, 3, 7, 7, 10, 15]);
+  assert.deepEqual(r.data.steps.map((x) => x.delayDays), [0, 3, 5, 7, 10, 14]);
   assert.ok(r.data.steps.slice(1).every((x) => x.subject === ''), 'follow-ups stay in the same thread');
 
   const edited = r.data.steps.map((x) => ({ ...x }));
@@ -429,7 +429,7 @@ test('first email comes from each lead\'s own CSV row; follow-ups come from the 
   const f = s.mailer.sent[3];
   assert.equal(f.to, 'info@sharmadental.in');
   assert.equal(f.subject, 'Re: Website for Sharma Dental');
-  assert.match(f.text, /Just following up on my previous email/);
+  assert.match(f.text, /Just bringing my last email back to the top of your inbox/);
 
   // edit a lead's first email before it is sent + preview it
   await s.api('POST', '/api/leads', { email: 'new@biz.in', name: 'Karan', company: 'Biz', firstSubject: 'Hello Biz', firstMessage: 'Hi {{first_name}}, short note.' });

@@ -29,6 +29,12 @@ services:
         value: "true"
       - key: MONGODB_DB
         value: myfollowup
+      - key: DAILY_LIMIT
+        value: "30"
+      - key: MAX_DAILY_LIMIT
+        value: "30"
+      - key: SEND_GAP_MINUTES
+        value: "18"
       - key: FRONTEND_URL
         sync: false
       - key: PUBLIC_BACKEND_URL

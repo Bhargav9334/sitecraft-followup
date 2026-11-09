@@ -24,6 +24,9 @@ function makeConfig(over = {}) {
       PUBLIC_BACKEND_URL: 'https://api.example.test',
       FRONTEND_URL: 'http://localhost:3000',
       MAIL_DRY_RUN: 'false',
+      DAILY_LIMIT: '10',
+      MAX_DAILY_LIMIT: '10',
+      SEND_GAP_MINUTES: '60',
     }),
     ...over,
   };

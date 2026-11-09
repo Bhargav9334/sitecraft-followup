@@ -29,59 +29,68 @@ If it would be useful, I can share a few ideas for {{company|your business}} alo
     subject: '',
     body: `Hi {{first_name|there}},
 
-Just following up on my previous email.
+Just bringing my last email back to the top of your inbox.
 
-If a new website, or an update to your current one, is on your list this year, I'd be glad to help. Reply with a line about what you have in mind and I'll send you a clear quote.`,
+Small fixes often make a real difference: one clear contact number, an enquiry form that works, and showing up properly on Google. Most businesses start getting more calls within a few weeks.
+
+I'd be happy to show you exactly what I would change for {{company|your business}}. Should I send over a short plan?`,
+  },
+  {
+    delayDays: 5,
+    subject: '',
+    body: `Hi {{first_name|there}},
+
+To give you a clearer picture, this is what a website from us usually includes:
+
+- Your own domain and a professional email (like info@yourbusiness.in)
+- A mobile-friendly design that loads fast
+- Enquiry or booking forms that send new leads straight to your WhatsApp
+- Setup on Google Maps so local customers can find you
+- Help with changes and updates after launch
+
+If you like, I can put together a one-page sample for {{company|your business}}, so you can see it before deciding anything.`,
   },
   {
     delayDays: 7,
     subject: '',
     body: `Hi {{first_name|there}},
 
-In case it helps, here is what we usually build for businesses like {{company|yours}}:
+Many business owners tell me they've had a bad experience with a web developer before: delays, extra charges, or someone who stopped replying after launch.
 
-- Business websites that look great on mobile and load fast
-- Online booking and enquiry forms that send new leads straight to you
-- Simple custom software for billing, customer records and day-to-day work
+Here is how we work instead:
 
-Every project is planned around your budget, and we stay available for changes and support after launch.
+1. A 10-minute call to understand your business
+2. A fixed price and timeline in writing before any work starts
+3. A preview you can check and change before it goes live
+4. Support on WhatsApp after launch
 
-Is any of this something you have been thinking about?`,
-  },
-  {
-    delayDays: 7,
-    subject: '',
-    body: `Hi {{first_name|there}},
-
-A common worry with website projects is delays and unexpected costs. Here is how we keep it simple:
-
-1. A short call to understand what you need
-2. A fixed quote and timeline before any work starts
-3. Regular updates until your website is live
-
-No long contracts and no hidden charges.
-
-Would a 10-minute call this week work for you?`,
+Would a short call this week or next suit you?`,
   },
   {
     delayDays: 10,
     subject: '',
     body: `Hi {{first_name|there}},
 
-I don't want to fill up your inbox, so I'll keep this short.
+I'll keep this one short. Is a better website something you'd want for {{company|your business}}?
 
-If {{company|your business}} needs a new website, a redesign, or software to save time on daily work, just reply with a line about it and I'll get back to you with a clear quote.`,
+You can simply reply with a number:
+
+1 - Yes, let's talk
+2 - Maybe later, check back in a few months
+3 - Not interested
+
+Any answer helps, and I'll go with it.`,
   },
   {
-    delayDays: 15,
+    delayDays: 14,
     subject: '',
     body: `Hi {{first_name|there}},
 
-I haven't heard back, so I'll assume the timing isn't right and I won't email you again.
+I haven't heard back, so I'll take it that now isn't the right time. This will be my last email.
 
-If you ever need a website or custom software for {{company|your business}}, just reply to this email and I'll be happy to help.
+If you ever want a new website, a redesign or simple software for {{company|your business}}, just reply to this email, even months from now, and I'll pick it up from there.
 
-Thank you for your time.`,
+Wishing you and your team all the best.`,
   },
 ];
 

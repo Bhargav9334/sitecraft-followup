@@ -25,7 +25,7 @@ function list(v) {
 }
 
 function readConfig(env = process.env) {
-  const maxDailyLimit = Math.max(1, int(env.MAX_DAILY_LIMIT, 10));
+  const maxDailyLimit = Math.max(1, int(env.MAX_DAILY_LIMIT, 30));
   const cfg = {
     port: int(env.PORT, 5001),
     mongoUri: env.MONGODB_URI || 'mongodb://127.0.0.1:27017',
@@ -73,10 +73,10 @@ function readConfig(env = process.env) {
     timezone: env.TIMEZONE || 'Asia/Kolkata',
     maxDailyLimit,
     defaults: {
-      dailyLimit: Math.min(maxDailyLimit, Math.max(1, int(env.DAILY_LIMIT, 10))),
+      dailyLimit: Math.min(maxDailyLimit, Math.max(1, int(env.DAILY_LIMIT, 30))),
       startHour: int(env.SEND_START_HOUR, 9),
       endHour: int(env.SEND_END_HOUR, 19),
-      gapMinutes: Math.max(1, int(env.SEND_GAP_MINUTES, 60)),
+      gapMinutes: Math.max(1, int(env.SEND_GAP_MINUTES, 18)),
       skipSundays: bool(env.SKIP_SUNDAYS, true),
     },
   };
