@@ -1,4 +1,4 @@
-// Central Government gazetted holidays (India) — DoPT list for 2026.
+// Central Government gazetted holidays (India) — DoPT lists for 2026 and 2027.
 // Moon-based dates (Id, Muharram, Milad-un-Nabi) can shift by a day; edit them
 // from the Settings page in the app whenever the official notice changes.
 // Add next year's list from Settings once the government publishes it.
@@ -21,10 +21,22 @@ const DEFAULT_HOLIDAYS = [
   { date: '2026-11-08', name: 'Diwali' },
   { date: '2026-11-24', name: 'Guru Nanak Jayanti' },
   { date: '2026-12-25', name: 'Christmas' },
-  // Fixed-date national holidays for 2027 (the rest get added when DoPT publishes the list)
+  // DoPT gazetted holidays for 2027 (O.M. F.No.12/2/2023-JCA dated 16 July 2026)
   { date: '2027-01-26', name: 'Republic Day' },
-  { date: '2027-08-15', name: 'Independence Day' },
+  { date: '2027-03-10', name: 'Id-ul-Fitr' },
+  { date: '2027-03-23', name: 'Holi' },
+  { date: '2027-03-26', name: 'Good Friday' },
+  { date: '2027-04-15', name: 'Ram Navami' },
+  { date: '2027-04-19', name: 'Mahavir Jayanti' },
+  { date: '2027-05-17', name: 'Id-ul-Zuha (Bakrid)' },
+  { date: '2027-05-20', name: 'Buddha Purnima' },
+  { date: '2027-06-16', name: 'Muharram' },
+  { date: '2027-08-15', name: 'Independence Day / Milad-un-Nabi' },
+  { date: '2027-08-25', name: 'Janmashtami' },
   { date: '2027-10-02', name: 'Gandhi Jayanti' },
+  { date: '2027-10-09', name: 'Dussehra' },
+  { date: '2027-10-29', name: 'Diwali' },
+  { date: '2027-11-14', name: 'Guru Nanak Jayanti' },
   { date: '2027-12-25', name: 'Christmas' },
 ];
 
