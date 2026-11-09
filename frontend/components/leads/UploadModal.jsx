@@ -116,7 +116,12 @@ export default function UploadModal({ open, onClose, onDone }) {
               {result.added - result.withOwnFirstEmail > 0 ? ` The other ${result.added - result.withOwnFirstEmail} will get the default Email 1 from the Sequence page.` : ''}
             </Alert>
           )}
-          {result.duplicates > 0 && <Alert kind="info">{result.duplicates} were already in your list (or unsubscribed) — skipped.</Alert>}
+          {result.duplicates > 0 && (
+            <Alert kind="info">
+              {result.duplicates} duplicate{result.duplicates === 1 ? '' : 's'} skipped (already in your list, unsubscribed, or repeated in the file) — they will not be emailed again.
+              {result.duplicateEmails?.length > 0 && <div style={{ marginTop: 6, fontSize: 12, opacity: 0.85, wordBreak: 'break-all' }}>{result.duplicateEmails.join(', ')}{result.duplicates > result.duplicateEmails.length ? ' …' : ''}</div>}
+            </Alert>
+          )}
           {result.invalid > 0 && (
             <Alert kind="warn">
               {result.invalid} rows had an invalid email — skipped.

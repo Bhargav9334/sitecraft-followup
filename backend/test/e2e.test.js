@@ -41,10 +41,12 @@ test('end-to-end: login → import → schedule → follow-up → reply stop →
   assert.equal(r.status, 200, JSON.stringify(r.data));
   assert.equal(r.data.added, 3);
   assert.equal(r.data.invalid, 1);
-  assert.equal(r.data.duplicates, 0); // same email inside the file is merged
+  assert.equal(r.data.duplicates, 1, 'same email repeated inside the file is skipped');
+  assert.equal(r.data.duplicateEmails.length, 1);
   r = await s.api('POST', '/api/leads/import', { csv: CSV });
   assert.equal(r.data.added, 0);
-  assert.equal(r.data.duplicates, 3, 're-upload never creates duplicates');
+  assert.equal(r.data.duplicates, 4, 're-upload never creates duplicates (3 existing + 1 repeat row)');
+  assert.equal(r.data.duplicateEmails.length, 3);
 
   r = await s.api('GET', '/api/leads?limit=10');
   assert.equal(r.data.total, 3);

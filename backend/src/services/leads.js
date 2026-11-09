@@ -26,6 +26,7 @@ function newLeadDoc(clean, source, now) {
 async function addLeads(repo, rawList, source, now = new Date()) {
   const invalid = [];
   const seen = new Set();
+  const repeatedInFile = [];
   const docs = [];
   for (const raw of rawList.slice(0, MAX_IMPORT)) {
     const { lead, error } = sanitizeLead(raw || {});
@@ -33,7 +34,10 @@ async function addLeads(repo, rawList, source, now = new Date()) {
       invalid.push(error);
       continue;
     }
-    if (seen.has(lead.email)) continue;
+    if (seen.has(lead.email)) {
+      repeatedInFile.push(lead.email);
+      continue;
+    }
     seen.add(lead.email);
     // tiny offset keeps the upload order inside the queue
     docs.push(newLeadDoc(lead, source, new Date(now.getTime() + docs.length)));
@@ -42,7 +46,9 @@ async function addLeads(repo, rawList, source, now = new Date()) {
   return {
     added: inserted.length,
     withOwnFirstEmail: inserted.filter((l) => l.firstMessage).length,
-    duplicates: duplicates.length,
+    // Already in the list (or repeated inside the same file) — skipped, never emailed twice.
+    duplicates: duplicates.length + repeatedInFile.length,
+    duplicateEmails: [...new Set([...duplicates, ...repeatedInFile])].slice(0, 20),
     invalid: invalid.length,
     invalidSamples: invalid.slice(0, 5),
     skippedOverLimit: Math.max(0, rawList.length - MAX_IMPORT),
