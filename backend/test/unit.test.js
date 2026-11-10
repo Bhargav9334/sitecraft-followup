@@ -114,7 +114,7 @@ test('auto-reply detection + quoted text stripping', () => {
 
 test('no public domain: footer asks to reply "unsubscribe", header uses mailto only', () => {
   const { composeForLead, unsubscribeInfo, unsubscribeHeaders } = require('../src/services/sender');
-  const config = { fromEmail: 'me@gmail.com', publicBackendUrl: 'http://localhost:5001' };
+  const config = { fromEmail: 'me@gmail.com', publicBackendUrl: 'http://localhost:5001', unsubscribeLink: true };
   const lead = { name: 'Mohit', email: 'm@x.com', unsubToken: 'tok' };
   const info = unsubscribeInfo(config, lead);
   assert.equal(info.url, null);
@@ -122,12 +122,12 @@ test('no public domain: footer asks to reply "unsubscribe", header uses mailto o
   assert.equal(h['List-Unsubscribe'], '<mailto:me@gmail.com?subject=Unsubscribe>');
   assert.equal(h['List-Unsubscribe-Post'], undefined);
   const mail = composeForLead({ lead, step: { subject: 'Hi', body: 'Hello {{first_name}}' }, index: 0, config, settings: {} });
-  assert.match(mail.text, /reply with "unsubscribe"/);
+  assert.match(mail.text, /reply "no thanks"/);
   assert.doesNotMatch(mail.text, /localhost/);
-  assert.doesNotMatch(mail.html, /localhost/);
-  assert.match(mail.html, /mailto:me@gmail\.com/);
+  assert.doesNotMatch(mail.html, /localhost|style=|font-size/, 'plain personal-looking HTML');
 
-  const pub = unsubscribeInfo({ ...config, publicBackendUrl: 'https://api.site.in' }, lead);
+  const pub = unsubscribeInfo({ ...config, unsubscribeLink: true, publicBackendUrl: 'https://api.site.in' }, lead);
+  assert.equal(unsubscribeInfo({ ...config, unsubscribeLink: false, publicBackendUrl: 'https://api.site.in' }, lead).url, null, 'link is off unless UNSUBSCRIBE_LINK=true');
   assert.equal(pub.url, 'https://api.site.in/u/tok');
   assert.match(unsubscribeHeaders(pub)['List-Unsubscribe'], /^<https:\/\/api\.site\.in\/u\/tok>, <mailto:/);
 });
@@ -198,4 +198,29 @@ test('config: MAIL_TRANSPORT gmail-api needs client id/secret/refresh token, not
   assert.deepEqual(validateConfig(g), []);
   assert.match(validateConfig(readConfig({ ...base, MAIL_TRANSPORT: 'gmail-api' })).join(), /GMAIL_REFRESH_TOKEN is missing/);
   assert.match(validateConfig(readConfig({ ...base, MAIL_TRANSPORT: 'pigeon' })).join(), /MAIL_TRANSPORT must be/);
+});
+
+test('warm-up caps the daily limit for a new account, then lifts', async () => {
+  const { warmupCap, getSettings } = require('../src/services/settings');
+  assert.deepEqual([0, 6, 7, 13, 14, 21, 27, 28].map(warmupCap), [10, 10, 15, 15, 20, 25, 25, Infinity]);
+  const cfg = { warmup: true, maxDailyLimit: 30, defaults: { dailyLimit: 30, startHour: 9, endHour: 19, gapMinutes: 18, skipSundays: true }, signature: {} };
+  const repo = (saved) => ({ getSettings: async () => saved });
+  const start = new Date('2026-11-10T04:00:00Z');
+  let s = await getSettings(repo({ warmupStartedAt: start }), cfg, new Date('2026-11-12T04:00:00Z'));
+  assert.equal(s.dailyLimit, 30);
+  assert.equal(s.effectiveDailyLimit, 10);
+  assert.equal(s.warmup.day, 3);
+  s = await getSettings(repo({ warmupStartedAt: start }), cfg, new Date('2026-11-19T04:00:00Z'));
+  assert.equal(s.effectiveDailyLimit, 15);
+  s = await getSettings(repo({ warmupStartedAt: start }), cfg, new Date('2026-12-20T04:00:00Z'));
+  assert.equal(s.effectiveDailyLimit, 30);
+  assert.equal(s.warmup, null);
+  s = await getSettings(repo({}), { ...cfg, warmup: false });
+  assert.equal(s.effectiveDailyLimit, 30);
+});
+
+test('polite "no thanks" replies count as unsubscribe', () => {
+  const { isUnsubscribeRequest } = require('../src/services/replies');
+  for (const t of ['no thanks', 'No, thank you.', 'not interested', 'No']) assert.equal(isUnsubscribeRequest({ subject: 'Re: x', text: t }), true, t);
+  assert.equal(isUnsubscribeRequest({ subject: 'Re: x', text: 'No problem, call me at 5 pm' }), false);
 });

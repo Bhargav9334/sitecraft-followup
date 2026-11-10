@@ -48,7 +48,7 @@ function textToHtml(text) {
   const linked = escapeHtml(text).replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1">$1</a>');
   return linked
     .split(/\n{2,}/)
-    .map((para) => `<p style="margin:0 0 14px 0">${para.replace(/\n/g, '<br>')}</p>`)
+    .map((para) => `<div>${para.replace(/\n/g, '<br>')}</div><br>`)
     .join('');
 }
 
@@ -75,20 +75,16 @@ function buildEmail({ step, index, lead, unsubscribe, unsubscribeUrl, senderName
   if (!subject) subject = 'Hello';
   const body = render(step.body, vars).trim();
   const sig = signatureLines(signature);
-  const lead_in = "If you don't want to receive more emails from me";
-  const footerText = unsub.url
-    ? `\n\n--\n${lead_in}, unsubscribe here: ${unsub.url}`
-    : `\n\n--\n${lead_in}, just reply with "unsubscribe" and I won't email you again.`;
-  const footerHtml = unsub.url
-    ? `${lead_in}, <a href="${escapeHtml(unsub.url)}" style="color:#8a93a3">unsubscribe here</a>.`
-    : unsub.mailto
-      ? `${lead_in}, just reply with <a href="${escapeHtml(unsub.mailto)}" style="color:#8a93a3">&quot;unsubscribe&quot;</a> and I won't email you again.`
-      : `${lead_in}, just reply with &quot;unsubscribe&quot; and I won't email you again.`;
-  const text = body + (sig.length ? `\n\n${sig.join('\n')}` : '') + footerText;
-  const sigHtml = sig.length ? `<p style="margin:0 0 14px 0">${sig.map(escapeHtml).join('<br>')}</p>` : '';
-  const html =
-    `<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.55;color:#1f2430">${textToHtml(body)}${sigHtml}` +
-    `<p style="margin:24px 0 0 0;font-size:12px;color:#8a93a3">${footerHtml}</p></div>`;
+  // Plain, personal-looking mail: no grey small print, no styling (marketing look hurts inbox placement).
+  const optOut = unsub.url
+    ? `P.S. If this isn't relevant for you, you can unsubscribe here: ${unsub.url}`
+    : `P.S. If this isn't relevant for you, just reply "no thanks" and I won't email you again.`;
+  const text = body + (sig.length ? `\n\n${sig.join('\n')}` : '') + `\n\n${optOut}`;
+  const sigHtml = sig.length ? `<div>${sig.map(escapeHtml).join('<br>')}</div><br>` : '';
+  const optOutHtml = unsub.url
+    ? `P.S. If this isn't relevant for you, you can <a href="${escapeHtml(unsub.url)}">unsubscribe here</a>.`
+    : `P.S. If this isn't relevant for you, just reply &quot;no thanks&quot; and I won't email you again.`;
+  const html = `<div dir="ltr">${textToHtml(body)}${sigHtml}<div>${optOutHtml}</div></div>`;
   return { subject, text, html };
 }
 

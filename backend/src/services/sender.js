@@ -6,7 +6,7 @@ const { dayBounds, addMinutes } = require('../lib/time');
 const { canSendNow, followUpDueAt } = require('../lib/schedule');
 const { buildEmail } = require('../lib/template');
 const { getSettings, getSequence } = require('./settings');
-const { hasPublicUrl } = require('../config');
+const { useUnsubscribeLink } = require('../config');
 
 const MAX_FAILS = 3;
 
@@ -23,7 +23,7 @@ function makeMessageId(fromEmail) {
  */
 function unsubscribeInfo(config, lead) {
   const mailto = `mailto:${config.fromEmail}?subject=${encodeURIComponent('Unsubscribe')}`;
-  const url = hasPublicUrl(config) ? `${config.publicBackendUrl}/u/${lead.unsubToken}` : null;
+  const url = useUnsubscribeLink(config) ? `${config.publicBackendUrl}/u/${lead.unsubToken}` : null;
   return { url, mailto };
 }
 
@@ -115,8 +115,9 @@ function createSender({ repo, mailer, config, logger = console }) {
 
       // Gmail API may give the mail its own Message-ID: keep both so replies always match.
       const sentId = (info && info.messageId) || messageId;
-      const newIds = [...new Set([messageId, sentId])];
+      const newIds = [...new Set([messageId, sentId].filter(Boolean))];
       await repo.addLog({ leadId: lead.id, direction: 'out', kind: 'sequence', step: index + 1, subject: mail.subject, messageId: sentId, text: mail.text, at: now, status: 'sent' });
+      if (config.warmup && !settings.warmupStartedAt) await repo.saveSettings({ warmupStartedAt: now });
       const nextIndex = index + 1;
       const patch = {
         step: nextIndex,

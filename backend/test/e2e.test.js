@@ -295,8 +295,8 @@ test('signature + From name: default, edited from Settings, used in every mail',
   const m1 = s.mailer.sent[0];
   assert.equal(m1.fromName, 'Bhargav from SiteCraft');
   assert.match(m1.text, /I'm Bhargav from SiteCraft\./);
-  assert.match(m1.text, /Would you be open to a quick chat\?\n\nBest regards,\nSiteCraft by Bhargav\n\n--\nIf you don't want/);
-  assert.match(m1.html, /Best regards,<br>SiteCraft by Bhargav<\/p>/);
+  assert.match(m1.text, /Would you be open to a quick chat\?\n\nBest regards,\nSiteCraft by Bhargav\n\nP\.S\. If this isn't relevant/);
+  assert.match(m1.html, /Best regards,<br>SiteCraft by Bhargav<\/div>/);
   assert.doesNotMatch(m1.text + m1.html, /geek/i, 'no "Geek" anywhere');
 
   // change name + phone from the frontend (Settings)
@@ -310,7 +310,7 @@ test('signature + From name: default, edited from Settings, used in every mail',
   await s.sender.runTick(ist(2026, 11, 12, 9, 0));
   const m2 = s.mailer.sent[1];
   assert.equal(m2.fromName, 'Bhargav | SiteCraft');
-  assert.match(m2.text, /Best regards,\nSiteCraft by Bhargav\n\+91 98765 43210\n\n--/);
+  assert.match(m2.text, /Best regards,\nSiteCraft by Bhargav\n\+91 98765 43210\n\nP\.S\./);
 
   // preview + test mail show the same signature
   r = await s.api('POST', '/api/sequence/preview', { index: 0 });
@@ -481,7 +481,7 @@ test('no domain (localhost): lead replies "unsubscribe" -> Unsubscribed list, no
   await s.sender.runTick(ist(2026, 11, 10, 9, 0));
   await s.sender.runTick(ist(2026, 11, 10, 10, 0));
   const m = s.mailer.sent.find((x) => x.to === 'owner@abc.in');
-  assert.match(m.text, /just reply with "unsubscribe" and I won't email you again\.$/);
+  assert.match(m.text, /just reply "no thanks" and I won't email you again\.$/);
   assert.doesNotMatch(m.text + m.html, /localhost/);
   assert.equal(m.headers['List-Unsubscribe'], '<mailto:bhargav.sitecraft@gmail.com?subject=Unsubscribe>');
   assert.equal(m.headers['List-Unsubscribe-Post'], undefined);
@@ -506,7 +506,7 @@ test('no domain (localhost): lead replies "unsubscribe" -> Unsubscribed list, no
   await s.api('POST', '/api/system/test-email', { to: 'me@test.in' });
   const tm = s.mailer.sent[s.mailer.sent.length - 1];
   assert.equal(tm.headers['List-Unsubscribe'], '<mailto:bhargav.sitecraft@gmail.com?subject=Unsubscribe>');
-  assert.match(tm.text, /reply with "unsubscribe"/);
+  assert.match(tm.text, /reply "no thanks"/);
 });
 
 test('sender stores the Message-ID + Gmail thread returned by the mailer, follow-up stays in that thread, reply still matches', async (t) => {

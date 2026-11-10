@@ -27,6 +27,8 @@ function makeConfig(over = {}) {
       DAILY_LIMIT: '10',
       MAX_DAILY_LIMIT: '10',
       SEND_GAP_MINUTES: '60',
+      UNSUBSCRIBE_LINK: 'true',
+      WARMUP: 'false',
     }),
     ...over,
   };

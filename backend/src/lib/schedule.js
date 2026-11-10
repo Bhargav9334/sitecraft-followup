@@ -25,7 +25,8 @@ function canSendNow(now, settings, state) {
   const p = zonedParts(now, settings.timezone);
   if (p.hour < settings.startHour) return { ok: false, reason: `Sending starts at ${fmtHour(settings.startHour)}` };
   if (p.hour >= settings.endHour) return { ok: false, reason: `Sending window closed for today (${fmtHour(settings.endHour)})` };
-  if (state.sentToday >= settings.dailyLimit) return { ok: false, reason: `Daily limit reached (${settings.dailyLimit}/${settings.dailyLimit})` };
+  const limit = settings.effectiveDailyLimit ?? settings.dailyLimit;
+  if (state.sentToday >= limit) return { ok: false, reason: `Daily limit reached (${limit}/${limit})${settings.warmup ? ` — warm-up day ${settings.warmup.day}` : ''}` };
   if (state.lastSentAt) {
     const nextAllowed = addMinutes(new Date(state.lastSentAt), settings.gapMinutes);
     if (now < nextAllowed) return { ok: false, reason: `Waiting for the gap — next email after ${fmtTime(nextAllowed, settings.timezone)}` };
@@ -49,7 +50,7 @@ function nextSendSlot(now, settings, state) {
   for (let i = 0; i < 31; i++) {
     const p = zonedParts(candidate, settings.timezone);
     if (p.dateKey !== startKey) sentToday = 0;
-    const blocked = dayBlockReason(candidate, settings) || sentToday >= settings.dailyLimit || p.hour >= settings.endHour;
+    const blocked = dayBlockReason(candidate, settings) || sentToday >= (settings.effectiveDailyLimit ?? settings.dailyLimit) || p.hour >= settings.endHour;
     if (!blocked) {
       if (p.hour < settings.startHour) {
         return zonedTimeToDate(p.year, p.month, p.day, settings.startHour, 0, settings.timezone);

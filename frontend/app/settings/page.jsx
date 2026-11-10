@@ -147,7 +147,7 @@ export default function SettingsPage() {
           <Card title="Sending rules" subtitle="Runs automatically every day">
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               <div style={grid2}>
-                <Field label="Daily limit" htmlFor="dl" hint={`Maximum ${s.maxDailyLimit} (fixed in .env)`}>
+                <Field label="Daily limit" htmlFor="dl" hint={s.warmup ? `Warm-up day ${s.warmup.day}: max ${s.effectiveDailyLimit} today (rises weekly to ${s.dailyLimit}) · hard cap ${s.maxDailyLimit}` : `Maximum ${s.maxDailyLimit} (fixed in .env)`}>
                   <input id="dl" type="number" min={1} max={s.maxDailyLimit} value={form.dailyLimit} onChange={(e) => set('dailyLimit', e.target.value)} style={inputStyle} />
                 </Field>
                 <Field label="Gap between emails (minutes)" htmlFor="gap">
@@ -241,7 +241,7 @@ export default function SettingsPage() {
                 {status.unsubscribeMode === 'link' ? (
                   <>Unsubscribe: one-click link <code>{status.publicBackendUrl}/u/…</code> (leads can also reply &quot;unsubscribe&quot;).</>
                 ) : (
-                  <>Unsubscribe: leads reply &quot;unsubscribe&quot; and are moved to the Unsubscribed list automatically. No domain needed.</>
+                  <>Unsubscribe: every mail ends with a P.S. — leads reply &quot;no thanks&quot; or &quot;unsubscribe&quot; and are moved to the Unsubscribed list automatically. No link in the mail (better inbox placement).</>
                 )}
               </p>
             </div>

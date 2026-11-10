@@ -26,7 +26,7 @@ function Stat({ label, value, note, color = C.ink, href }) {
 function buildSlots(settings) {
   const slots = [];
   let minutes = settings.startHour * 60;
-  while (slots.length < settings.dailyLimit && minutes < settings.endHour * 60) {
+  while (slots.length < (settings.effectiveDailyLimit ?? settings.dailyLimit) && minutes < settings.endHour * 60) {
     slots.push(minutes);
     minutes += settings.gapMinutes;
   }
@@ -57,7 +57,7 @@ export default function DashboardView({ data, onCheckReplies, checking, checkMsg
         <Stat label="In sequence" value={counts.active || 0} note="Follow-ups running" color={C.accent} href="/leads?status=active" />
         <Stat label="Replied" value={counts.replied || 0} note="Follow-ups stopped" color={C.green} href="/replies" />
         <Stat label="Unsubscribed" value={counts.unsubscribed || 0} note="Never emailed again" color={C.red} href="/unsubscribed" />
-        <Stat label="Sent today" value={`${data.sentToday}/${settings.dailyLimit}`} note={`${data.totalSent} emails sent in total`} />
+        <Stat label="Sent today" value={`${data.sentToday}/${settings.effectiveDailyLimit ?? settings.dailyLimit}`} note={`${data.totalSent} emails sent in total`} />
       </div>
 
       <Card

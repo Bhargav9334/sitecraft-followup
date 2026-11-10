@@ -50,7 +50,7 @@ export default function DashboardPage() {
   return (
     <AppShell
       title="Dashboard"
-      subtitle={s ? `${s.dailyLimit} emails/day · ${hour(s.startHour)} – ${hour(s.endHour)} · 1 email every ${s.gapMinutes} min` : 'Loading…'}
+      subtitle={s ? `${s.effectiveDailyLimit ?? s.dailyLimit} emails/day${s.warmup ? ` (warm-up day ${s.warmup.day})` : ''} · ${hour(s.startHour)} – ${hour(s.endHour)} · 1 email every ${s.gapMinutes} min` : 'Loading…'}
       actions={
         <Link href="/leads?upload=1" style={buttonStyle('primary', 'sm')}>
           <IconUpload size={15} />

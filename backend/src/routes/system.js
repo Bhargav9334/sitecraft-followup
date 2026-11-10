@@ -2,7 +2,7 @@
 const { HttpError } = require('../lib/http');
 const { getSettings, validateSettingsPatch, getSequence } = require('../services/settings');
 const { sendingState, composeForLead, makeMessageId, unsubscribeInfo, unsubscribeHeaders } = require('../services/sender');
-const { hasPublicUrl } = require('../config');
+const { useUnsubscribeLink } = require('../config');
 const { canSendNow, nextSendSlot, dayBlockReason } = require('../lib/schedule');
 const { zonedParts } = require('../lib/time');
 const { isEmail, clean } = require('../lib/validate');
@@ -88,7 +88,7 @@ function registerSystemRoutes(router, { repo, config, mailer, imapPoller }) {
     fromName: (await getSettings(repo, config)).fromName,
     dryRun: Boolean(mailer.dryRun),
     publicBackendUrl: config.publicBackendUrl,
-    unsubscribeMode: hasPublicUrl(config) ? 'link' : 'reply',
+    unsubscribeMode: useUnsubscribeLink(config) ? 'link' : 'reply',
   }));
 
   router.post('/api/system/check-replies', async () => imapPoller.pollOnce());

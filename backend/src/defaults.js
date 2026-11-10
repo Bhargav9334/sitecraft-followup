@@ -42,7 +42,7 @@ I'd be happy to show you exactly what I would change for {{company|your business
 
 To give you a clearer picture, this is what a website from us usually includes:
 
-- Your own domain and a professional email (like info@yourbusiness.in)
+- Your own domain and a professional business email
 - A mobile-friendly design that loads fast
 - Enquiry or booking forms that send new leads straight to your WhatsApp
 - Setup on Google Maps so local customers can find you

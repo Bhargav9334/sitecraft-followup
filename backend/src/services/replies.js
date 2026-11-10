@@ -5,7 +5,7 @@ const BOUNCE_FROM = /(mailer-daemon|postmaster|mail delivery (subsystem|system))
 const AUTO_SUBJECT = /(out of (the )?office|automatic reply|auto[- ]?reply|autoreply|on leave|vacation reply|abwesenheit)/i;
 const EMAIL_IN_TEXT = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/gi;
 const UNSUB_SUBJECT = /^\s*(re:\s*)?(unsubscribe|opt[- ]?out)\b/i;
-const UNSUB_WORDS = /^(please\s+)?(unsubscribe(\s+me)?|opt[- ]?out|stop|stop emailing( me)?|remove me( from (your|the) list)?|remove)\s*(please)?[.!]*$/i;
+const UNSUB_WORDS = /^(please\s+)?(unsubscribe(\s+me)?|opt[- ]?out|stop|stop emailing( me)?|remove me( from (your|the) list)?|remove|no|no,? thanks?( you)?|not interested)\s*(please)?[.!]*$/i;
 
 /** Only the lead's own words — drops the quoted earlier mail ("> ..." and "On ... wrote:"). */
 function ownText(text) {

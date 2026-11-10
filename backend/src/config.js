@@ -71,6 +71,10 @@ function readConfig(env = process.env) {
     },
 
     timezone: env.TIMEZONE || 'Asia/Kolkata',
+    // Off by default: a link to the API host (e.g. *.onrender.com) in a cold email hurts inbox placement.
+    unsubscribeLink: bool(env.UNSUBSCRIBE_LINK, false),
+    // New Gmail accounts: ramp the daily limit up over 4 weeks (10 → 15 → 20 → 25 → full).
+    warmup: bool(env.WARMUP, true),
     maxDailyLimit,
     defaults: {
       dailyLimit: Math.min(maxDailyLimit, Math.max(1, int(env.DAILY_LIMIT, 30))),
@@ -118,9 +122,14 @@ function configWarnings(cfg) {
   return w;
 }
 
+/** Put a clickable unsubscribe link in mails? Only when turned on AND the URL is public. */
+function useUnsubscribeLink(cfg) {
+  return Boolean(cfg.unsubscribeLink) && hasPublicUrl(cfg);
+}
+
 /** True when PUBLIC_BACKEND_URL is a real address the lead can open (not localhost). */
 function hasPublicUrl(cfg) {
   return Boolean(cfg.publicBackendUrl) && !/\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])(:|\/|$)/i.test(cfg.publicBackendUrl);
 }
 
-module.exports = { hasPublicUrl, readConfig, validateConfig, configWarnings, loadDotEnv };
+module.exports = { hasPublicUrl, useUnsubscribeLink, readConfig, validateConfig, configWarnings, loadDotEnv };

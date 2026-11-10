@@ -3,10 +3,19 @@ const { DEFAULT_HOLIDAYS, normalizeHolidays } = require('../lib/holidays');
 const { DEFAULT_STEPS, STEP_COUNT } = require('../defaults');
 const { clean, cleanMultiline } = require('../lib/validate');
 
-async function getSettings(repo, config) {
+/** Warm-up cap for a new sending account: day 0–6 → 10, 7–13 → 15, 14–20 → 20, 21–27 → 25, then no cap. */
+function warmupCap(day) {
+  if (day < 7) return 10;
+  if (day < 14) return 15;
+  if (day < 21) return 20;
+  if (day < 28) return 25;
+  return Infinity;
+}
+
+async function getSettings(repo, config, now = new Date()) {
   const saved = (await repo.getSettings()) || {};
   const d = config.defaults;
-  return {
+  const s = {
     paused: saved.paused === true,
     pausedAt: saved.pausedAt || null,
     skipSundays: saved.skipSundays !== undefined ? saved.skipSundays : d.skipSundays,
@@ -15,6 +24,7 @@ async function getSettings(repo, config) {
     endHour: saved.endHour ?? d.endHour,
     gapMinutes: saved.gapMinutes ?? d.gapMinutes,
     dailyLimit: Math.min(saved.dailyLimit ?? d.dailyLimit, config.maxDailyLimit),
+    warmupStartedAt: saved.warmupStartedAt || null,
     timezone: config.timezone,
     maxDailyLimit: config.maxDailyLimit,
     fromName: saved.fromName || config.fromName,
@@ -22,6 +32,13 @@ async function getSettings(repo, config) {
     senderName: saved.senderName !== undefined ? saved.senderName : config.senderName,
     signature: { ...config.signature, ...(saved.signature || {}) },
   };
+  // Effective limit for today (warm-up). dailyLimit stays what the user set.
+  const start = s.warmupStartedAt ? new Date(s.warmupStartedAt) : now;
+  const warmupDay = Math.max(0, Math.floor((now - start) / 86400000));
+  const cap = config.warmup ? warmupCap(warmupDay) : Infinity;
+  s.warmup = config.warmup && cap !== Infinity ? { day: warmupDay + 1, cap } : null;
+  s.effectiveDailyLimit = Math.min(s.dailyLimit, cap);
+  return s;
 }
 
 /** Validates a settings update from the UI. Returns { patch } or { error }. */
@@ -88,4 +105,4 @@ function validateSteps(steps) {
   return { steps: clean6 };
 }
 
-module.exports = { getSettings, validateSettingsPatch, getSequence, validateSteps };
+module.exports = { warmupCap, getSettings, validateSettingsPatch, getSequence, validateSteps };
