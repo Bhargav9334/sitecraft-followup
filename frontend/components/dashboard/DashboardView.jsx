@@ -1,5 +1,7 @@
 'use client';
+import { useState } from 'react';
 import Link from 'next/link';
+import EmailDetailModal from '../EmailDetailModal';
 import { C, STATUS } from '../theme';
 import { Card, Badge, Avatar, Alert, Button, Empty } from '../ui';
 import { fmtTime, fmtDateTime, timeAgo, hourLabel, relDay } from '@/lib/format';
@@ -46,6 +48,7 @@ export default function DashboardView({ data, onCheckReplies, checking, checkMsg
   const { counts, settings } = data;
   const slots = buildSlots(settings);
   const blocked = settings.paused ? 'System stopped' : data.dayBlocked;
+  const [open, setOpen] = useState(null); // { leadId, step }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -76,7 +79,13 @@ export default function DashboardView({ data, onCheckReplies, checking, checkMsg
             return (
               <div
                 key={m}
+                role={sent ? 'button' : undefined}
+                tabIndex={sent ? 0 : undefined}
+                title={sent ? 'Click to see the full email' : undefined}
+                onClick={sent ? () => setOpen({ leadId: sent.leadId, step: sent.step }) : undefined}
+                onKeyDown={sent ? (e) => (e.key === 'Enter' || e.key === ' ') && setOpen({ leadId: sent.leadId, step: sent.step }) : undefined}
                 style={{
+                  cursor: sent ? 'pointer' : 'default',
                   borderRadius: 8,
                   padding: '10px 8px',
                   minHeight: 78,
@@ -104,6 +113,7 @@ export default function DashboardView({ data, onCheckReplies, checking, checkMsg
         </div>
         <p style={{ margin: '14px 0 0', fontSize: 13, color: C.sub }}>
           {data.nextSlot ? `Next sending slot: ${fmtDateTime(data.nextSlot)} (if a lead is due)` : 'System stopped — nothing scheduled'}
+          {data.todaySent.length > 0 && ' · Click a sent slot to read the full email.'}
         </p>
       </Card>
 
@@ -114,7 +124,13 @@ export default function DashboardView({ data, onCheckReplies, checking, checkMsg
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {data.upcoming.map((u, i) => (
-                <Link key={u.id} href={`/leads/${u.id}`} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 0', borderTop: i ? `1px solid ${C.line}` : 'none', textDecoration: 'none', color: 'inherit' }}>
+                <button
+                  type="button"
+                  key={u.id}
+                  title="Click to see the full email"
+                  onClick={() => setOpen({ leadId: u.id, step: u.nextStep })}
+                  style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 0', border: 'none', borderTop: i ? `1px solid ${C.line}` : 'none', background: 'transparent', width: '100%', textAlign: 'left', cursor: 'pointer', font: 'inherit', color: 'inherit' }}
+                >
                   <Avatar name={u.name || u.company} email={u.email} size={34} />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 14, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.company || u.name || u.email}</div>
@@ -126,10 +142,11 @@ export default function DashboardView({ data, onCheckReplies, checking, checkMsg
                     </Badge>
                     <span style={{ fontSize: 12, color: C.sub, minWidth: width < 700 ? 0 : 120, textAlign: 'right' }}>{relDay(u.nextSendAt)}</span>
                   </div>
-                </Link>
+                </button>
               ))}
             </div>
           )}
+          {data.upcoming.length > 0 && <p style={{ margin: '10px 0 0', fontSize: 12, color: C.muted }}>Click any email to see who it goes to and the full message.</p>}
         </Card>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -185,6 +202,7 @@ export default function DashboardView({ data, onCheckReplies, checking, checkMsg
           ))
         )}
       </Card>
+      <EmailDetailModal open={Boolean(open)} onClose={() => setOpen(null)} leadId={open?.leadId} step={open?.step} />
     </div>
   );
 }

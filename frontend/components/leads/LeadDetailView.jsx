@@ -6,6 +6,7 @@ import { api } from '@/lib/api';
 import { fmtDateTime, relDay, gmailLink } from '@/lib/format';
 import { useWidth } from '@/lib/useWidth';
 import { IconExternal, IconStop, IconPlay } from '../icons';
+import EmailDetailModal from '../EmailDetailModal';
 
 function Row({ label, value, href }) {
   return (
@@ -122,18 +123,27 @@ export default function LeadDetailView({ data, onStop, onResume, onDelete, onCha
   const canResume = ['stopped', 'replied', 'completed'].includes(lead.status) && lead.step < totalSteps;
   const custom = Object.entries(lead.custom || {});
   const conversation = [...logs].sort((a, b) => new Date(b.at) - new Date(a.at));
+  const [openStep, setOpenStep] = useState(null);
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: width >= 1100 ? 'minmax(0, 2fr) minmax(300px, 1fr)' : 'minmax(0, 1fr)', gap: 20, alignItems: 'start' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20, minWidth: 0 }}>
         <FirstEmailCard key={`${lead.id}-${lead.updatedAt}`} lead={lead} onChanged={onChanged} />
-        <Card title="6-email sequence" subtitle={`${lead.step} of ${totalSteps} emails sent`}>
+        <Card title="6-email sequence" subtitle={`${lead.step} of ${totalSteps} emails sent · click an email to read it in full`}>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             {timeline.map((t) => {
               const color = t.state === 'sent' ? C.accent : t.state === 'next' ? C.green : '#C5CBD5';
               const isReplyPoint = lead.status === 'replied' && lead.repliedAfterStep === t.n;
               return (
-                <div key={t.n} style={{ display: 'flex', gap: 14, alignItems: 'center', padding: '10px 0', borderTop: t.n > 1 ? `1px solid ${C.line}` : 'none' }}>
+                <div
+                  key={t.n}
+                  role="button"
+                  tabIndex={0}
+                  title="Click to see the full email"
+                  onClick={() => setOpenStep(t.n)}
+                  onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setOpenStep(t.n)}
+                  style={{ display: 'flex', gap: 14, alignItems: 'center', padding: '10px 0', borderTop: t.n > 1 ? `1px solid ${C.line}` : 'none', cursor: 'pointer' }}
+                >
                   <span style={{ width: 28, height: 28, borderRadius: 8, background: color, color: '#fff', fontWeight: 700, fontSize: 13, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{t.n}</span>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 14, fontWeight: 600 }}>Email {t.n}</div>
@@ -229,6 +239,7 @@ export default function LeadDetailView({ data, onStop, onResume, onDelete, onCha
         {lead.notes && <Row label="Notes" value={lead.notes} />}
         {lead.lastError && <Row label="Last error" value={lead.lastError} />}
       </Card>
+      <EmailDetailModal open={Boolean(openStep)} onClose={() => setOpenStep(null)} leadId={lead.id} step={openStep} />
     </div>
   );
 }
